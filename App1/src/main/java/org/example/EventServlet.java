@@ -122,9 +122,10 @@ public class EventServlet extends HttpServlet {
 //        resp.setHeader("Access-Control-Allow-Origin", "*");
 //        resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
 //        resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, String> body = mapper.readValue(req.getInputStream(), Map.class);
-        String eid = body.get("eid");
+//        ObjectMapper mapper = new ObjectMapper();
+//        Map<String, String> body = mapper.readValue(req.getInputStream(), Map.class);
+//        String eid = body.get("eid");
+        String eid = req.getParameter("eid");
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -135,7 +136,8 @@ public class EventServlet extends HttpServlet {
 
             int rows = stmt.executeUpdate();
             resp.setContentType("application/json");
-            mapper.writeValue(resp.getWriter(), rows);
+//            mapper.writeValue(resp.getWriter(), rows);
+            resp.getWriter().write("success");
 
         } catch (Exception e) {
             throw new RuntimeException(e);
