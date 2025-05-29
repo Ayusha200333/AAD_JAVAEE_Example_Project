@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Manager</title>
+<!--    <style>-->
+<!--        body { font-family: Arial, sans-serif; margin: 20px; }-->
+<!--        table { border-collapse: collapse; width: 100%; margin-top: 20px; }-->
+<!--        table, th, td { border: 1px solid #ccc; }-->
+<!--        th, td { padding: 8px; text-align: left; }-->
+<!--        input[type="text"], input[type="date"] {-->
+<!--            padding: 5px;-->
+<!--            margin: 5px;-->
+<!--        }-->
+
+<!--        #createEvent{-->
+<!--            background-color: cornflowerblue;-->
+<!--            width: 100px;-->
+<!--            height: 30px;-->
+<!--        }-->
+<!--        #updateEvent{-->
+<!--            background-color: grey;-->
+<!--            width: 100px;-->
+<!--            height: 30px;-->
+<!--        }-->
+<!--        #deleteEvent{-->
+<!--            background-color: red;-->
+<!--            width: 100px;-->
+<!--            height: 30px;-->
+<!--        }-->
+
+<!--    </style>-->
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 30px;
+            background-color: #f7f9fc;
+            color: #333;
+        }
+
+        h2, h3 {
+            color: #2c3e50;
+        }
+
+        input[type="text"], input[type="date"] {
+            padding: 10px;
+            margin: 5px 10px 10px 0;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input[type="text"]:focus, input[type="date"]:focus {
+            border-color: #2980b9;
+            box-shadow: 0 0 5px rgba(41, 128, 185, 0.5);
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            margin: 5px 10px 10px 0;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #createEvent {
+            background-color: #3498db;
+        }
+
+        #createEvent:hover {
+            background-color: #2980b9;
+        }
+
+        #updateEvent {
+            background-color: #7f8c8d;
+        }
+
+        #updateEvent:hover {
+            background-color: #636e72;
+        }
+
+        #deleteEvent {
+            background-color: #e74c3c;
+        }
+
+        #deleteEvent:hover {
+            background-color: #c0392b;
+        }
+
+        #getAllEvents {
+            background-color: #2ecc71;
+        }
+
+        #getAllEvents:hover {
+            background-color: #27ae60;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #34495e;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+
+</head>
+<body>
+
+<h2>Event Manager</h2>
+
+<h3>Create / Update Event</h3>
+<input type="text" id="eid" placeholder="Event ID (for update/delete)">
+<input type="text" id="ename" placeholder="Event Name">
+<input type="text" id="edescription" placeholder="Description">
+<input type="date" id="edate">
+<input type="text" id="eplace" placeholder="Place">
+<button id="createEvent">Create</button>
+<button id="updateEvent">Update</button>
+<button id="deleteEvent">Delete</button>
+
+<h3>All Events</h3>
+<button id="getAllEvents">Get All</button>
+<table id="event">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Date</th>
+        <th>Place</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script src="jquery-3.7.1.min.js"></script>
+<script>
+    const apiUrl = 'http://localhost:8080/App1_Web_exploded/event';
+
+    function refreshTable(data) {
+        const tbody = $('#event tbody');
+        tbody.empty();
+        data.forEach(event => {
+            tbody.append(`
+                <tr>
+                    <td>${event.eid}</td>
+                    <td>${event.ename}</td>
+                    <td>${event.edescription}</td>
+                    <td>${event.edate}</td>
+                    <td>${event.eplace}</td>
+                </tr>
+            `);
+        });
+    }
+
+    $('#getAllEvents').click(function () {
+        $.ajax({
+            url: apiUrl,
+            method: 'GET',
+            success: function (response) {
+                refreshTable(response);
+            },
+            error: function () {
+                alert("Error fetching data");
+            }
+        });
+    });
+
+    $('#createEvent').click(function () {
+        const event = {
+            eid:$('#eid').val(),
+            ename: $('#ename').val(),
+            edescription: $('#edescription').val(),
+            edate: $('#edate').val(),
+            eplace: $('#eplace').val()
+        };
+        $.ajax({
+            url: apiUrl,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(event),
+            success: function (response) {
+                alert('Event created');
+                $('#getAllEvents').click();
+            },
+            error: function () {
+                alert("Error creating event");
+            }
+        });
+    });
+
+    $('#updateEvent').click(function () {
+        const event = {
+            eid: $('#eid').val(),
+            ename: $('#ename').val(),
+            edescription: $('#edescription').val(),
+            edate: $('#edate').val(),
+            eplace: $('#eplace').val()
+        };
+        $.ajax({
+            url: apiUrl,
+            method: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify(event),
+            success: function (response) {
+                alert('Event updated');
+                $('#getAllEvents').click();
+            },
+            error: function () {
+                alert("Error updating event");
+            }
+        });
+    });
+
+    $('#deleteEvent').click(function () {
+        const eid = $('#eid').val();
+        if (!eid) {
+            alert("Please enter Event ID to delete.");
+            return;
+        }
+        $.ajax({
+            url: apiUrl,
+            method: 'DELETE',
+            contentType: 'application/json',
+            data: JSON.stringify({ eid }),
+            success: function (response) {
+                alert('Event deleted');
+                $('#getAllEvents').click();
+            },
+            error: function () {
+                alert("Error deleting event");
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
