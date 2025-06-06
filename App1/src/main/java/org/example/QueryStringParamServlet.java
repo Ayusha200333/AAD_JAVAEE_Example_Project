@@ -14,7 +14,7 @@ public class QueryStringParamServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
        String name =  req.getParameter("name");
        String address =  req.getParameter("address");
-        System.out.println("name: " + name);
-        System.out.println("address: " + address);
+       System.out.println("name: " + name);
+       System.out.println("address: " + address);
     }
 }
